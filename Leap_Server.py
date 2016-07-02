@@ -60,15 +60,12 @@ class SampleListener(Leap.Listener):
                 yaw = direction.yaw * Leap.RAD_TO_DEG  # Rotation around y-axis(Perpendicular to the plane)
 
                 if pitch > 35:
-                    connection.sendall((handType + ":Back").encode('ascii'))
-                    print handType + ":Back"
+                    connection.sendall((handType + ":Back\n").encode('ascii'))
                 elif pitch < -35:
-                    connection.sendall((handType + ":Front").encode('ascii'))
-                    print handType + ":Front"
+                    connection.sendall((handType + ":Front\n").encode('ascii'))
 
             for tool in frame.tools:
-                connection.sendall(("Tool").encode('ascii'))
-                print "Tool"
+                connection.sendall(("Tool\n").encode('ascii'))
 
             for gesture in frame.gestures():
                 # swipe gesture
@@ -80,11 +77,9 @@ class SampleListener(Leap.Listener):
                     swipe_direction = swipe.direction
                     swipe_speed = swipe.speed
                     if swipe_direction.x > 0:
-                        connection.sendall(("Swipe Right").encode('ascii'))
-                        print 'Swipe Right'
+                        connection.sendall(("Swipe Right\n").encode('ascii'))
                     else:
-                        connection.sendall(("Swipe Left").encode('ascii'))
-                        print 'Swipe Left'
+                        connection.sendall(("Swipe Left\n").encode('ascii'))
                 # screen tab gesture
                 elif gesture.type == Leap.Gesture.TYPE_SCREEN_TAP:
                     screentap = Leap.ScreenTapGesture(gesture)
@@ -92,8 +87,7 @@ class SampleListener(Leap.Listener):
                     screentap_state = self.state_names[gesture.state]
                     screentap_position = screentap.position
                     screentap_direction = screentap.direction
-                    connection.sendall(("Screentab").encode('ascii'))
-                    print "Screentab"
+                    connection.sendall(("Screentab\n").encode('ascii'))
 
                 # keytab Gesture
                 elif gesture.type == Leap.Gesture.TYPE_KEY_TAP:
@@ -102,8 +96,7 @@ class SampleListener(Leap.Listener):
                     keytap_state = self.state_names[gesture.state]
                     keytap_position = keytap.position
                     keytap_direction = keytap.direction
-                    connection.sendall(("Keytab").encode('ascii'))
-                    print "Keytab"
+                    connection.sendall(("Keytab\n").encode('ascii'))
 
         except socket.error:
             create_connection()
