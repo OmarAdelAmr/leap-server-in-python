@@ -60,9 +60,9 @@ class SampleListener(Leap.Listener):
                 yaw = direction.yaw * Leap.RAD_TO_DEG  # Rotation around y-axis(Perpendicular to the plane)
 
                 if pitch > 35:
-                    connection.sendall((handType + ":Back\n").encode('ascii'))
+                    connection.sendall((handType + ",Back\n").encode('ascii'))
                 elif pitch < -35:
-                    connection.sendall((handType + ":Front\n").encode('ascii'))
+                    connection.sendall((handType + ",Front\n").encode('ascii'))
 
             for tool in frame.tools:
                 connection.sendall(("Tool\n").encode('ascii'))
