@@ -52,30 +52,51 @@ class SampleListener(Leap.Listener):
             # connection.sendall(x.encode('ascii'))
 
             for hand in frame.hands:
-                hand_type = "Left Hand" if hand.is_left else "Right Hand"
+                handType = "Left Hand" if hand.is_left else "Right Hand"
+                normal = hand.palm_normal
                 direction = hand.direction
                 pitch = direction.pitch * Leap.RAD_TO_DEG  # Rotation around x-axis
+                roll = normal.roll * Leap.RAD_TO_DEG  # Rotation around z-axis
+                yaw = direction.yaw * Leap.RAD_TO_DEG  # Rotation around y-axis(Perpendicular to the plane)
 
-                arm = hand.arm
-                arm_direction = arm.direction
-                x = arm_direction.x
-                y = arm_direction.y
-                if x > 0.2:
-                    if y <= -0.5:
-                        connection.sendall("Pick\n".encode('ascii'))
-
-                elif x < -0.2:
-                    if y <= -0.5:
-                        connection.sendall("Place\n".encode('ascii'))
-
-                else:
-                    if pitch > 35:
-                        connection.sendall((hand_type + ",Back\n").encode('ascii'))
-                    else:
-                        connection.sendall("and\n".encode('ascii'))
+                if pitch > 35:
+                    connection.sendall((handType + ",Back\n").encode('ascii'))
+                elif pitch < -35:
+                    connection.sendall((handType + ",Front\n").encode('ascii'))
 
             for tool in frame.tools:
-                connection.sendall("Tool\n".encode('ascii'))
+                connection.sendall(("Tool\n").encode('ascii'))
+
+            for gesture in frame.gestures():
+                # swipe gesture
+                if gesture.type == Leap.Gesture.TYPE_SWIPE:
+                    swipe = Leap.SwipeGesture(gesture)
+                    swipe_id = swipe.id
+                    swipe_state = self.state_names[gesture.state]
+                    swipe_position = swipe.position
+                    swipe_direction = swipe.direction
+                    swipe_speed = swipe.speed
+                    if swipe_direction.x > 0:
+                        connection.sendall(("Swipe Right\n").encode('ascii'))
+                    else:
+                        connection.sendall(("Swipe Left\n").encode('ascii'))
+                # screen tab gesture
+                elif gesture.type == Leap.Gesture.TYPE_SCREEN_TAP:
+                    screentap = Leap.ScreenTapGesture(gesture)
+                    screentap_id = gesture.id
+                    screentap_state = self.state_names[gesture.state]
+                    screentap_position = screentap.position
+                    screentap_direction = screentap.direction
+                    connection.sendall(("Screentab\n").encode('ascii'))
+
+                # keytab Gesture
+                elif gesture.type == Leap.Gesture.TYPE_KEY_TAP:
+                    keytap = Leap.KeyTapGesture(gesture)
+                    keytap_id = gesture.id
+                    keytap_state = self.state_names[gesture.state]
+                    keytap_position = keytap.position
+                    keytap_direction = keytap.direction
+                    connection.sendall(("Keytab\n").encode('ascii'))
 
         except socket.error:
             create_connection()
